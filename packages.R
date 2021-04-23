@@ -1,5 +1,57 @@
+
+
 ## library() calls go here
 library(conflicted)
 library(dotenv)
 library(targets)
 library(tarchetypes)
+## data cleaning
+library(janitor)
+library(naniar)
+## imputation
+library(ipa)
+library(mice)
+library(miceRanger)
+## reporting
+library(rmarkdown)
+library(glue)
+library(table.glue)
+library(knitr)
+library(kableExtra)
+library(gtsummary)
+library(gt)
+## data analysis
+library(tidyverse)
+library(rstanarm)
+library(tidybayes)
+library(data.table)
+library(magrittr)
+library(survival)
+library(xgboost)
+library(xgboost.surv)
+library(tidymodels)
+library(randomForestSRC)
+library(MASS)
+library(VIM)
+library(Hmisc)
+library(party)
+## model evaluation
+library(riskRegression)
+
+
+conflict_prefer("roc",       "pROC")
+conflict_prefer("complete",  "mice")
+conflict_prefer("filter",    "dplyr")
+conflict_prefer("select",    "dplyr")
+conflict_prefer("slice",     "dplyr")
+conflict_prefer('summarise', 'dplyr')
+conflict_prefer('summarize', 'dplyr')
+conflict_prefer('select',    'dplyr')
+conflict_prefer("gather",    "tidyr")
+conflict_prefer("set_names", "purrr")
+conflict_prefer("discard", "purrr")
+conflict_prefer("fixed", "stringr")
+conflict_prefer("all_numeric", "recipes")
+conflict_prefer("matches",     "tidyselect")
+conflict_prefer("impute",      "miceRanger")
+conflict_prefer("R2", "rstanarm")
