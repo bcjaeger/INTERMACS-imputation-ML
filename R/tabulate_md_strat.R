@@ -9,11 +9,8 @@ tabulate_md_strat <- function(sim_output,
                               md_type_labels,
                               model_labels,
                               outcome_labels,
-                              additional_missing_labels) {
-
-  rspec <- round_spec() %>%
-    round_using_decimal(digits = 2) %>%
-    round_half_even()
+                              additional_missing_labels,
+                              rspec) {
 
   md_method_comparators <- sim_output %>%
     pull(md_strat) %>%
@@ -65,8 +62,6 @@ tabulate_md_strat <- function(sim_output,
         tbl_variables = c('model', 'md_strat', 'additional_missing_pct'),
         tbl_values = 'tbl_value'
     )
-
-  pm <- function(x) ifelse(x > 0, "+", "")
 
   tbl_objects <- tbl_data %>%
     map(

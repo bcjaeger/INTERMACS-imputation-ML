@@ -181,11 +181,11 @@ visualize_md_strat_inference <- function(bayes_mccv_fits,
                            labels = plot_labels) +
           theme_bw()
 
-        x_range <- ggplot_build(fig)$layout$panel_scales_x[[1]]$range$range
+        x_domain <- ggplot_build(fig)$layout$panel_scales_x[[1]]$range$range
+        x_domain_max <- x_domain[2]
+        x_domain_span <- diff(x_domain)
 
-        x_range_max <- x_range[2]
-
-        x_text <- x_range_max * 0.66
+        x_text <- x_domain_max - x_domain_span * (1/8)
 
         fig_final <- fig +
           geom_label(data = posterior_comparison$`Multiple imputation`,

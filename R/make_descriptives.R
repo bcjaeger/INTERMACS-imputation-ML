@@ -5,7 +5,7 @@
 ##' @title
 ##' @param im
 ##' TODO: change status to 6 months, change censored to alive on device
-tabulate_descriptives <- function(im, times) {
+make_descriptives <- function(im, times) {
 
   tbl_data <- im %>%
     mutate(

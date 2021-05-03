@@ -39,7 +39,7 @@ rsconnect/
 _targets/
 
 # html
-*.html
+#*.html
 
 # renv via capsule
 renv/

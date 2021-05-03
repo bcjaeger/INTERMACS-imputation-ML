@@ -4,9 +4,11 @@
 ##'
 ##' @title
 
-tabulate_impute_accuracy <- function(mc_cv_results) {
+tabulate_impute_accuracy <- function(sim_output,
+                                     md_method_labels,
+                                     additional_missing_labels) {
 
-  data_tbl <- mc_cv_results %>%
+  tbl_data_inline <- sim_output %>%
     filter(additional_missing_pct > 0,
            md_strat != 'mia') %>%
     group_by(
@@ -19,7 +21,15 @@ tabulate_impute_accuracy <- function(mc_cv_results) {
       pe = nominal[md_strat == 'meanmode_si'],
       nominal = (nominal - pe) / (1 - pe)
     ) %>%
-    select(md_strat, additional_missing_pct, nominal, numeric) %>%
+    select(
+      iteration,
+      outcome,
+      model,
+      md_strat,
+      additional_missing_pct,
+      nominal,
+      numeric
+    ) %>%
     group_by(md_strat, additional_missing_pct) %>%
     summarize(
       across(
@@ -29,26 +39,37 @@ tabulate_impute_accuracy <- function(mc_cv_results) {
           lwr = ~quantile(.x, probs = 0.025),
           upr = ~quantile(.x, probs = 0.975)
         )
-      )
-    )
-
-  data_tbl %>%
-    mutate(
-      nominal = table_glue(
-        "{pm(nominal_est)}{nominal_est}\n({nominal_lwr}, {nominal_upr})"
       ),
-      numeric = table_glue(
-        "{pm(numeric_est)}{numeric_est}\n({numeric_lwr}, {numeric_upr})"
-      )
+      .groups = 'drop'
     ) %>%
     mutate(
+      nominal = table_glue(
+        "{pm(nominal_est)}{nominal_est}<br/>({nominal_lwr}, {nominal_upr})"
+      ),
+      numeric = table_glue(
+        "{pm(numeric_est)}{numeric_est}<br/>({numeric_lwr}, {numeric_upr})"
+      ),
       across(
         .cols = c(nominal, numeric),
         .fns = ~str_replace(.x,
-                            pattern = fixed('0.00\n(0.00, 0.00)'),
+                            pattern = fixed('0.00<br/>(0.00, 0.00)'),
                             replacement = fixed('0 (reference)'))
       )
+    )
+
+  inline <- tbl_data_inline %>%
+    ungroup() %>%
+    mutate(
+      across(
+        .cols = c(nominal, numeric),
+        .fns = ~str_replace(.x, pattern = fixed('<br/>'), replacement = ' ')
+      ),
+      additional_missing_pct = paste0('miss_', additional_missing_pct)
     ) %>%
+    as_inline(tbl_variables = c('md_strat', 'additional_missing_pct'),
+              tbl_values = c('nominal', 'numeric'))
+
+  tbl_data_formatted <- tbl_data_inline  %>%
     separate(md_strat, into = c('md_method', 'md_type')) %>%
     pivot_wider(values_from = matches("^nominal|^numeric"),
                 names_from = md_type) %>%
@@ -60,61 +81,45 @@ tabulate_impute_accuracy <- function(mc_cv_results) {
            numeric_mi,
            everything())
 
+  tbl_object <- tbl_data_formatted %>%
+    select(md_method:numeric_mi) %>%
+    mutate(
+      across(
+        ends_with("_mi"),
+        ~ if_else(is.na(.x), '---', .x)
+      ),
+      md_method = factor(
+        md_method,
+        levels = names(md_method_labels),
+        labels = md_method_labels),
+      additional_missing_pct = factor(
+        additional_missing_pct,
+        levels = additional_missing_labels[-1],
+        labels = names(additional_missing_labels)[-1]
+      )
+    ) %>%
+    arrange(additional_missing_pct, md_method) %>%
+    gt(groupname_col = 'additional_missing_pct',
+       rowname_col = 'md_method') %>%
+    tab_stubhead(label = 'Imputation method') %>%
+    tab_spanner(label = 'Nominal variables',
+                columns = c('nominal_si', 'nominal_mi')) %>%
+    tab_spanner(label = 'Numeric variables',
+                columns = c('numeric_si', 'numeric_mi')) %>%
+    fmt_markdown(columns = TRUE) %>%
+    cols_label(
+      nominal_si = 'Single imputation',
+      nominal_mi = 'Multiple imputation',
+      numeric_si = 'Single imputation',
+      numeric_mi = 'Multiple imputation',
+      md_method = 'Imputation method'
+    ) %>%
+    cols_align('center', columns = c('nominal_si', 'nominal_mi',
+                                     'numeric_si', 'numeric_mi'))
+
+  list(data = tbl_data_inline,
+       inline = inline,
+       table = tbl_object)
 
 }
-
-# resample_ids <- resamples %>%
-#   enframe(name = 'iteration', value = 'id')
-#
-# tmp <- mc_cv_results %>%
-#   left_join(resample_ids) %>%
-#   unnest(cols = c(sprobs, id)) %>%
-#   group_by(md_strat, outcome, additional_missing_pct, model, id) %>%
-#   summarize(across(matches("sprob"), mean))
-#
-# tmp2 <- tmp %>%
-#   group_by(md_strat, outcome, additional_missing_pct, model) %>%
-#   split(f = .$outcome)
-#
-# loadd(im)
-#
-# im_dead <- im %>%
-#   select(time = months_post_implant,
-#          status = pt_outcome_dead)
-#
-# im_txpl <- im %>%
-#   select(time = months_post_implant,
-#          status = pt_outcome_txpl)
-#
-# tmp3 <- tmp2$txpl %>%
-#   ungroup() %>%
-#   select(-outcome) %>%
-#   filter(md_strat != 'mia',
-#          additional_missing_pct == 0) %>%
-#   group_by(model, md_strat) %>%
-#   nest() %>%
-#   unite(col = 'id', md_strat, model) %>%
-#   deframe() %>%
-#   map(pull, sprobs) %>%
-#   Score(
-#     formula = Surv(time, status) ~ 1,
-#     data = im_txpl,
-#     plots = 'Calibration',
-#     se.fit = FALSE,
-#     times = 6
-#   )
-#
-# pcal <- plotCalibration(tmp3, method = 'q')
-#
-# pcal$plotFrames %>%
-#   bind_rows(.id = 'id') %>%
-#   as_tibble() %>%
-#   separate(id, into = c('md_method', 'md_strat', 'model')) %>%
-#   ggplot(aes(x=Pred, y=Obs, col = md_method)) +
-#   geom_point() +
-#   geom_line() +
-#   geom_abline(slope = 1) +
-#   facet_grid(~model)
-
-
 
