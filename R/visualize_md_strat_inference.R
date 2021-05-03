@@ -7,8 +7,11 @@
 visualize_md_strat_inference <- function(bayes_mccv_fits,
                                          md_type_labels,
                                          md_method_labels,
-                                         outcome_labels,
-                                         rspec) {
+                                         outcome_labels) {
+
+  rspec <- round_spec() %>%
+    round_using_decimal(digits = 1) %>%
+    round_half_even()
 
   get_xlevels <- function(posterior) {
 
@@ -135,37 +138,16 @@ visualize_md_strat_inference <- function(bayes_mccv_fits,
           ) %>%
           mutate(m2 = factor(m2, levels = rev(names(md_method_labels)[-1])))
 
-        probs_upr <- 0.95
-        probs_lwr <- 0.70
-
-        if(str_detect(.y, 'calibration')){
-          probs_lwr <- 0.0010
-          probs_upr <- 0.000001
+        if(.x$metric[1] == 'cal_error'){
+          prob_text <- "Pr(Difference < 0)"
+        } else {
+          prob_text <- "Pr(Difference > 0)"
         }
-
-        x_mi <- ggdat %>%
-          filter(md_type == 'Multiple imputation') %>%
-          summarize(value = quantile(distribution, probs = probs_upr)) %>%
-          pull(value)
-
-        x_si <- ggdat %>%
-          filter(md_type == 'Multiple imputation') %>%
-          summarize(value = quantile(distribution, probs = probs_lwr)) %>%
-          pull(value)
 
         x_label <- ggdat %>%
           select(metric, m2, md_type) %>%
           distinct() %>%
-          mutate(text = "Pr(Difference > 0)",
-                 distribution = (x_mi + x_si) / 2)
-
-        if(str_detect(.y, 'calibration')){
-          x_label <- ggdat %>%
-            select(metric, m2, md_type) %>%
-            distinct() %>%
-            mutate(text = "Pr(Difference < 0)",
-                   distribution = (x_mi + x_si) / 2)
-        }
+          mutate(text = prob_text)
 
         temp_rspec <- round_spec() %>%
           round_half_even() %>%
@@ -184,11 +166,6 @@ visualize_md_strat_inference <- function(bayes_mccv_fits,
               prob_gt_meanmode == '1.000',
               '>0.999',
               prob_gt_meanmode
-            ),
-            distribution = if_else(
-              condition = md_type == 'Multiple imputation',
-              true = x_mi,
-              false = x_si
             )
           ) %>%
           split(.$md_type)
@@ -202,25 +179,34 @@ visualize_md_strat_inference <- function(bayes_mccv_fits,
           stat_halfeye(alpha = 0.90) +
           scale_y_discrete(breaks = levels(ggdat$m2),
                            labels = plot_labels) +
-          theme_bw() +
-          #facet_grid(~metric) +
+          theme_bw()
+
+        x_range <- ggplot_build(fig)$layout$panel_scales_x[[1]]$range$range
+
+        x_range_max <- x_range[2]
+
+        x_text <- x_range_max * 0.66
+
+        fig_final <- fig +
           geom_label(data = posterior_comparison$`Multiple imputation`,
-                     nudge_y = 1/3,
-                     nudge_x = 1/4,
                      alpha = 1/2,
-                     show.legend = FALSE,
-                     aes(label = prob_gt_meanmode)) +
+                     x = x_text,
+                     aes(label = prob_gt_meanmode),
+                     hjust = -.55,
+                     vjust = -1/2,
+                     show.legend = FALSE) +
           geom_label(data = posterior_comparison$`Single imputation`,
-                     nudge_y = 1/3,
-                     nudge_x = 1/4,
                      alpha = 1/2,
-                     show.legend = FALSE,
-                     aes(label = prob_gt_meanmode)) +
+                     x = x_text,
+                     aes(label = prob_gt_meanmode),
+                     hjust = .55,
+                     vjust = -1/2,
+                     show.legend = FALSE) +
           geom_text(data = x_label,
-                     nudge_y = 7/10,
-                     nudge_x = 1/4,
-                     aes(label = text),
-                     fill = 'white') +
+                    x = x_text,
+                    hjust = 1/3,
+                    vjust = -3.5,
+                    aes(label = text)) +
           theme(panel.grid.major.y = element_line(),
                 panel.grid.minor = element_blank(),
                 panel.grid.major.x = element_blank(),
@@ -229,7 +215,7 @@ visualize_md_strat_inference <- function(bayes_mccv_fits,
           scale_fill_manual(values = c('orange', 'purple')) +
           labs(fill = '', x = .y, y = '')
 
-        list(fig = fig, probs = posterior_comparison)
+        list(fig = fig_final, probs = posterior_comparison)
 
       }
     )

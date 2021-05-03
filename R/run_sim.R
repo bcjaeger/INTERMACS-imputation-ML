@@ -24,7 +24,7 @@ run_sim <- function(intermacs_fake,
                     overwrite_sim_results_data = TRUE) {
 
   # require the number of iterations to match number of train/test splits.
-  if(length(test_index) == n_iter){
+  if(nrow(test_index) != n_iter){
     stop("the number of iterations (n_iter) must equal the ",
          "number of training/testing splits. Please adjust ",
          "one of these targets (i.e., n_iter or test_index) ",
@@ -102,7 +102,7 @@ run_sim <- function(intermacs_fake,
     # this creates the iteration, md_strat, outcome,
     # and additional_missing_pct values for the current run
 
-    msg <- glue("Beggining run number {i} \\
+    msg <- glue("Beggining run number {i} of {nrow(sim_params)} \\
               \n--> missing data strategy: {md_strat} \\
               \n--> iteration: {iteration} \\
               \n--> outcome: {outcome} \\
