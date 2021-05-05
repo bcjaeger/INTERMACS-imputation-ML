@@ -1,0 +1,81 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# INTERMACS-imputation-ML
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+This project allows you to engage with an analysis of data from the Interagency Registry for Mechanically Assisted Circulatory Support (INTERMACS) without directly engaging with the INTERMACS data. The analysis, which we anticipate publishing in _Circulation: Cardiovascular Quality and Outcomes_, investigates how data should be imputed to improve the prognostic accuracy of risk prediction models that leverage the imputed values. In particular, our analysis applies twelve imputation strategies in combination with two different modeling strategies for mortality and transplant risk prediction following surgery to receive mechanical circulatory support (MCS). 
+
+## Fake data
+
+The real INTERMACS data are publicly available through [BIOLINCC](https://biolincc.nhlbi.nih.gov/studies/intermacs/). This project hosts a simulated INTERMACS dataset that contains __no information__ from the real INTERMACS data. Instead, the fake INTERMACS data mimics the statistical properties of the real INTERMACS data. Once you have opened this project, accessing the fake INTERMACS data will be as easy as the code below makes it seem.
+
+```{r}
+
+intermacs_fake <- readr::read_csv("data/intermacs_fake.csv", 
+                                  col_types = readr::cols(),
+                                  n_max = 10)
+
+tibble::glimpse(intermacs_fake)
+
+```
+
+# File structure:
+
+Each directory in the project, and the files it contains, are described here.
+
+## R directory
+
+The `R` directory contains R scripts used in this analysis:
+
+- Each script contains one function.
+
+- The name of the script is the name of the function it contains.
+
+- At the top of each script, a description of the function indicates what it does and where it is used in the analysis.
+
+Generally, functions that create targets begin with the words `make`, `visualize`, or `tabulate`. These functions are used to create targets in the analysis workflow.
+
+- `make` functions create targets that contain datasets. These targets are often used in downstream targets, e.g. targets that contain figures or tables.
+
+- `visualize` functions create targets that contain figures.
+
+- `tabulate` functions create targets that contain tables.
+
+Some functions do not begin with one of these pre-fixes, and the purpose of these functions is written in the `@description` header at the top of the file.
+
+## data directory
+
+The `data` directory holds three files: 
+
+- `intermacs_fake.csv`: a simulated dataset that has similar statistical properties to data from INTERMACS.
+
+- `sim_output_fake.csv`: the results from the primary analysis when `intermacs_fake.csv` is used instead of the real INTERMACS data.
+
+- `sim_output_real.csv`: the results from the primary analysis when the real INTERMACS data is used. If this output is used to generate the distill article (see `docs/index.Rmd`), then the results generated will match results in the manuscript submitted to _Circulation: Cardiovascular Quality and Outcomes_. 
+
+## docs directory
+
+The `docs` directory holds four files: 
+
+- `ccqo.csl`: this file is used by `index.Rmd` to format references that follow guidelines from _Circulation: Cardiovascular Quality and Outcomes_.
+
+- `references.bib`: this file supplies references to `index.Rmd` in the [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
+
+- `index.Rmd`: this is the file that knits together the manuscript. It is written using the [distill R package](https://rstudio.github.io/distill/), which is an extension of [R Markdown](https://bookdown.org/yihui/rmarkdown/) designed for scientific articles.
+
+- `index.html`: this is the file that `index.Rmd` produces. Also, `index.html` is used by GitHub pages to produce a website associated with this project.
+
+

@@ -43,13 +43,15 @@ predict_risk_cph_si <- function(training,
 
   message("fitting CPH model")
 
-  model <- stepAIC(
-    coxph(Surv(time, status) ~ 1, data = .trn, x = TRUE),
-    scope = scope,
-    direction = 'both',
-    trace = verbose,
-    k = log(nrow(.trn)), # uses BIC
-    steps = ncol(.trn) - 2 # subtract 2 outcome columns
+  suppressWarnings(
+    model <- stepAIC(
+      coxph(Surv(time, status) ~ 1, data = .trn, x = TRUE),
+      scope = scope,
+      direction = 'both',
+      trace = verbose,
+      k = log(nrow(.trn)), # uses BIC
+      steps = ncol(.trn) - 2 # subtract 2 outcome columns
+    )
   )
 
   if( any(is.na(model$coefficients)) ){

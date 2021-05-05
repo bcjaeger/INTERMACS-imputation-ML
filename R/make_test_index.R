@@ -18,6 +18,6 @@ make_test_index <- function(n_split = 10,
                                  replace = FALSE,
                                  size = n_test)
 
-  test_index
+  enframe(test_index, name = 'iteration', value = 'test_index')
 
 }

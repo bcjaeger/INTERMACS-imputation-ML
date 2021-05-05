@@ -1,11 +1,19 @@
-##' .. content for \description{} (no empty lines) ..
+
+
+
+##' @title evaluate predictions from multiple models
 ##'
-##' .. content for \details{} ..
+##' @description This function is used in slurm_run.R to generate AUC,
+##'   scaled Brier scores, and calibration errors.
 ##'
-##' @title
-##' @param risk_predictions
-##' @param times
-##' @param testing_data
+##' @param risk_predictions a list of prediction matrices, where
+##'  - each item in the list is a matrix of predicted risk from a different model
+##'  - each column in the matrix has predictions for a specific time
+##'  - each row in the matrix has predictions for a specific individual.
+##' @param times the times at which predictions of risk were made
+##'
+##' @param testing_data data containing outcomes for the predicted cases.
+##'
 evaluate_risk_predictions <- function(risk_predictions,
                                       times,
                                       testing_data) {

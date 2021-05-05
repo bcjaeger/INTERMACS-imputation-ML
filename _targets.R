@@ -67,12 +67,24 @@ tar_plan(
     round_half_even() %>%
     format_missing(replace_na_with = '---'),
 
-  # create the test index, which is used to split
-  # the fake INTERMACS data into train/test sets
-  # throughout Monte-Carlo cross-validation.
-  test_index = make_test_index(n_split = 2,
-                               n_row = nrow(intermacs_fake)),
-
+  sim_input = make_sim_input(
+    n_split = 10,
+    n_row = nrow(intermacs_fake),
+    md_strat = c(
+      'mia',
+      'meanmode_si',
+      'ranger_si',
+      'ranger_mi',
+      'pmm',
+      'bayesreg',
+      'hotdeck_si',
+      'hotdeck_mi',
+      'nbrs_mi',
+      'nbrs_si'
+    ),
+    outcome = c('dead','txpl'),
+    additional_missing_pct = c(0, 15, 30)
+  ),
 
   # ------ running this simulation is optional ------
   # a pre-made result is available in data/sim_output_premade.csv.
@@ -82,44 +94,32 @@ tar_plan(
   # INTERMACS data, so don't be too surprised if you do your own sim
   # and find results are inconsistent with the results in the paper.
 
-  # md_strat = c(
-  #   'mia',
-  #   'meanmode_si',
-  #   'ranger_si',
-  #   'ranger_mi',
-  #   'pmm',
-  #   'bayesreg',
-  #   'hotdeck_si',
-  #   'hotdeck_mi'
-  #   'nbrs_mi',
-  #   'nbrs_si'
-  # ),
-  # outcome = c('dead','txpl'),
-  # additional_missing_pct = c(0, 15, 30),
-  # tar_target(
-  #   sim_output,
-  #   make_sim_output(intermacs_fake = intermacs_fake,
-  #                   times = times,
-  #                   test_index = test_index,
-  #                   md_strat = md_strat,
-  #                   outcome = outcome,
-  #                   additional_missing_pct = additional_missing_pct),
-  #   # iterate over all combos inside of cross()
-  #   pattern = cross(test_index,
-  #                   md_strat,
-  #                   outcome,
-  #                   additional_missing_pct)
-  # ),
+  tar_target(
+    sim_output,
+    make_sim_output(
+      intermacs_fake = intermacs_fake,
+      times = times,
+      iteration = sim_input$iteration,
+      test_index = sim_input$test_index,
+      md_strat = sim_input$md_strat,
+      outcome = sim_input$outcome,
+      additional_missing_pct = sim_input$additional_missing_pct
+    ),
+    # iterate over all rows of sim_input and bind the results by row.
+    # note that some results have >1 rows, so the number
+    # of rows for sim_input < number of rows for sim_output
+    pattern = map(sim_input)
+  ),
 
   # add index to sim_output_no_index
   # sim_output = add_index(sim_output_no_index)
-
 
   # Leave this uncommented to use the pre-made simulation results
   # Note that the pre-made simulation results are the same results
   # that were used in the paper this project is based on, so using
   # the pre-made simulation will reproduce results in the paper.
-  sim_output = read_csv("data/sim_output_premade.csv"),
+  # sim_output = read_csv("data/sim_output_real.csv"),
+  # sim_output = read_csv("data/sim_output_fake.csv"),
 
   bayes_mccv_fit = make_bayes_mccv_fit(sim_output),
 

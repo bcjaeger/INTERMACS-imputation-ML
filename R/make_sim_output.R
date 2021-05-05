@@ -8,6 +8,7 @@
 #' @param additional_missing_pct
 #' @param test_index
 make_sim_output <- function(intermacs_fake,
+                            iteration,
                             times,
                             test_index,
                             md_strat,
@@ -569,6 +570,7 @@ make_sim_output <- function(intermacs_fake,
       )  %>%
       left_join(impute_scores, by = 'md_strat') %>%
       mutate(
+        iteration = iteration,
         prop_miss_train = prop_miss_train,
         prop_miss_test = prop_miss_test,
         outcome = outcome,
