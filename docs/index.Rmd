@@ -250,20 +250,33 @@ trees <- rmse <- ggdata <- vector(mode='list', length = 100)
 for(t in seq_along(trees)){
 
   # create dataframe to analyze for the current ensemble.
+  # note that the value of preds is initialized as the mean of x
+  # and is then updated at the end of every boosting iteration.
+  # every other variable used to create df does not change.
   df = tibble(x = x, y = y, residuals = y - preds)
   
+  # add the next tree to the ensemble, fitting a model where
+  # the residuals are the dependent variable 
+  # and x is the independent variable
   trees[[t]] <- party::ctree(
     residuals ~ x, 
     data = df,
     controls = ctrl
   )
   
-  preds <- preds + as.numeric(predict(trees[[t]], newdata = df))* eta
+  # update the preds object by adding the predictions from the latest
+  # tree in the ensemble. To avoid overfitting, scale the values of
+  # the new predictions down by a factor of eta, ie the learning rate.
+  preds <- preds + as.numeric(predict(trees[[t]], newdata = df)) * eta
   
+  # this data is created in case you want to make an animation yourself
   ggdata[[t]] <- tibble(x=x, y=y, preds=preds)
   
+  # compute the root-mean-squared-error (RMSE) of the ensemble
+  # after including the current tree into the ensemble.
   rmse[[t]] <- sqrt(mean((preds-y)^2))
   
+  # print the current rmse value to console
   msg <- table_glue("RMSE after fitting tree {t}: {rmse[[t]]}")
   
   message(msg)
