@@ -1,17 +1,34 @@
-##' .. content for \description{} (no empty lines) ..
-##'
-##' .. content for \details{} ..
-##'
-##' @param sim_output
-##' @param md_method_labels
-##' @param md_type_labels
-##' @param model_labels
-##' @param outcome_labels
-##' @param additional_missing_labels
-##' @param times
-##'
-##' @title
-visualize_sim_output <- function(sim_output,
+
+#'
+#' @title Visualize output from Monte-Carlo cross-validation.
+#'
+#'
+#' @param mccv_output the `mccv_output` target, which is created by
+#'  `make_mccv_output()`.
+#'
+#' @param md_type_labels the labels for types of missing data methods.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param model_labels the labels for modeling algorithms.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param outcome_labels the labels for outcomes.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param rspec a rounding specification to format numbers in the table
+#'
+#' @param md_method_labels the labels for missing data methods.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param additional_missing_labels the labels for additional
+#'   missing percentages. These are created in the first steps
+#'   of the _targets.R file.
+#'
+#' @param times a numeric value indicating when risk predictions
+#'   are computed.
+
+
+visualize_mccv_output <- function(mccv_output,
                                  md_method_labels,
                                  md_type_labels,
                                  model_labels,
@@ -23,7 +40,7 @@ visualize_sim_output <- function(sim_output,
     round_using_decimal(digits = 2) %>%
     round_half_even()
 
-  ggdata <- sim_output %>%
+  ggdata <- mccv_output %>%
     # remove any failed runs where result is a try error
     drop_na(md_strat) %>%
     mutate(cal_error = cal_error * 1000) %>%

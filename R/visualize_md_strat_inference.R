@@ -1,9 +1,17 @@
-##' .. content for \description{} (no empty lines) ..
-##'
-##' .. content for \details{} ..
-##'
-##' @title
-##' @param bayes_mccv_fits
+
+#' @title Visualize inference from missing data strategy comparison
+#'
+#' @param bayes_mccv_fits a target created by `make_bayes_mccv_fit()`
+#'
+#' @param md_type_labels the labels for types of missing data methods.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param md_method_labels the labels for missing data methods.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param outcome_labels the labels for outcomes.
+#'   These are created in the first steps of the _targets.R file.
+#'
 visualize_md_strat_inference <- function(bayes_mccv_fits,
                                          md_type_labels,
                                          md_method_labels,

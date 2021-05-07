@@ -1,11 +1,16 @@
-##' .. content for \description{} (no empty lines) ..
+
+##' @title score imputation accuracy
 ##'
-##' .. content for \details{} ..
+##' @description this function computes an accuracy score
+##'   for each nominal and numeric variable in a given dataset.
+##'   It is used by `make_mccv_output()`.
 ##'
-##' @param amputed_values
-##' @param imputed_data
+##' @param imputed_data a dataset where missing values have been imputed.
 ##'
-##' @title
+##' @param amputed_values a list containing the true values for data
+##'   that have been imputed and an index describing which rows in
+##'   `imputed_data` correspond to these values.
+##'
 
 score_imputes <- function(imputed_data, amputed_values){
 

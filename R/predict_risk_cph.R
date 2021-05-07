@@ -1,14 +1,27 @@
-##' .. content for \description{} (no empty lines) ..
+
+
+##' @title Risk prediction with cox proportional hazards
 ##'
-##' .. content for \details{} ..
+##' @description this function is used by `predict_risk()`, which in
+##'   turn is used by `make_mccv_output()`. The purpose of this function
+##'   is to generate a set of predicted probabilities for the risk of a
+##'   given outcome at all of the values specified in `times`. Specifically,
+##'   this function computes the predicted probabilities for observations
+##'   in the `testing` data using a proportional hazards model fitted to
+##'   the `training` data. Prior to fitting the model, a data processing
+##'   `pipeline` is trained on the `training` data and then applied to
+##'   the `testing` data.
 ##'
-##' @param training
-##' @param testing
-##' @param pipeline
-##' @param verbose
-##' @param times
+##' @param training the training dataset.
 ##'
-##' @title
+##' @param testing the testing dataset.
+##'
+##' @param pipeline an untrained recipe (it will be trained on `training`).
+##'
+##' @param verbose `TRUE` or `FALSE`; should output be printed?
+##'
+##' @param times a numeric value indicating when risk predictions are computed.
+##'
 
 predict_risk_cph_si <- function(training,
                                 testing,
@@ -41,7 +54,7 @@ predict_risk_cph_si <- function(training,
     upper = formula_full
   )
 
-  message("fitting CPH model")
+  if(verbose) message("fitting CPH model")
 
   suppressWarnings(
     model <- stepAIC(
@@ -61,7 +74,7 @@ predict_risk_cph_si <- function(training,
 
     while ( any(is.na(model$coefficients)) ) {
 
-      message("Found a coefficient dependency")
+      if(verbose) message("Found a coefficient dependency")
 
       na_index <- which(is.na(model$coefficients))
       to_drop <- names(model$coefficients)[na_index]
@@ -72,7 +85,7 @@ predict_risk_cph_si <- function(training,
 
   }
 
-  message("done")
+  if (verbose) message("done")
 
   predictRisk(object = model, newdata = .tst, times = times)
 

@@ -1,14 +1,28 @@
-##' .. content for \description{} (no empty lines) ..
-##'
-##' .. content for \details{} ..
-##'
-##' @title
 
-tabulate_impute_accuracy <- function(sim_output,
+#' @title Create table 3: imputation accuracy
+#'
+#' @description this function creates a target that contains
+#'   - table 3 in `index.Rmd`, which summarizes imputation accuracy
+#'   - an inline summary of table 3 that is used to write results
+#'     from the table into text of the paper.
+#'   - the data that were used to create the table and inline summary.
+#'
+#' @param mccv_output the `mccv_output` target, which is created by
+#'  `make_mccv_output()`.
+#'
+#' @param md_method_labels the labels for missing data methods.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param additional_missing_labels the labels for additional
+#'   missing percentages. These are created in the first steps
+#'   of the _targets.R file.
+#'
+
+tabulate_impute_accuracy <- function(mccv_output,
                                      md_method_labels,
                                      additional_missing_labels) {
 
-  tbl_data_inline <- sim_output %>%
+  tbl_data_inline <- mccv_output %>%
     filter(additional_missing_pct > 0,
            md_strat != 'mia') %>%
     group_by(

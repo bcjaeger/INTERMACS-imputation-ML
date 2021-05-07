@@ -1,10 +1,36 @@
-##' .. content for \description{} (no empty lines) ..
-##'
-##' .. content for \details{} ..
-##'
-##' @title
-##' @param sim_output
-tabulate_md_strat <- function(sim_output,
+
+
+#' @title Create tables 4 - 9: model accuracy
+#'
+#' @description this function creates a target that contains
+#'   - tables 4 - 9 in `index.Rmd`, which summarize the accuracy
+#'     of models fitted to imputed data.
+#'   - an inline summary of each table that is used to write results
+#'     from the table into the text of the paper.
+#'
+#' @param mccv_output the `mccv_output` target, which is created by
+#'  `make_mccv_output()`.
+#'
+#' @param md_type_labels the labels for types of missing data methods.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param model_labels the labels for modeling algorithms.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param outcome_labels the labels for outcomes.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param rspec a rounding specification to format numbers in the table
+#'
+#' @param md_method_labels the labels for missing data methods.
+#'   These are created in the first steps of the _targets.R file.
+#'
+#' @param additional_missing_labels the labels for additional
+#'   missing percentages. These are created in the first steps
+#'   of the _targets.R file.
+#'
+
+tabulate_md_strat <- function(mccv_output,
                               md_method_labels,
                               md_type_labels,
                               model_labels,
@@ -12,12 +38,12 @@ tabulate_md_strat <- function(sim_output,
                               additional_missing_labels,
                               rspec) {
 
-  md_method_comparators <- sim_output %>%
+  md_method_comparators <- mccv_output %>%
     pull(md_strat) %>%
     unique() %>%
     setdiff("meanmode_si")
 
-  tbl_data <- sim_output %>%
+  tbl_data <- mccv_output %>%
     group_by(md_strat, model, outcome, additional_missing_pct) %>%
     #mutate(iteration = seq(n())) %>%
     ungroup() %>%

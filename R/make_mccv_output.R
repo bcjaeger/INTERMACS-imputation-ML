@@ -1,20 +1,43 @@
-#' .. content for \description{} (no empty lines) ..
+#' @title Monte-Carlo cross-validation experiment
 #'
-#' .. content for \details{} ..
+#' @description this function runs the main analysis for the project.
+#'   Given the inputs, the function completes one run of a Monte-Carlo
+#'   cross-validation experiment where the following occurs:
+#'   1. data are split into training/testing sets
+#'   2. predictor variables with too much missing are removed
+#'   3. predictor variables are amputed (see `additional_missing_pct`)
+#'   4. an analysis pipeline is developed:
+#'     a. remove predictors with almost zero variance
+#'     b. collapse categories for predictors with near zero counts.
+#'     c. data are imputed using a missing data strategy
+#'     d. models are fitted to the imputed data
+#'     e. the fitted models compute predictions in the testing data
+#'     f. the predictions in the testing data are assessed
+#'   5. the accuracy of the imputed values is assessed.
+#'   With `targets`, this function is used in combination with `map()`
+#'   to iterate through each row of `mccv_input`.
 #'
-#' @title
-#' @param md_strat
-#' @param outcome
-#' @param additional_missing_pct
-#' @param test_index
-make_sim_output <- function(intermacs_fake,
-                            iteration,
-                            times,
-                            test_index,
-                            md_strat,
-                            outcome,
-                            additional_missing_pct,
-                            n_impute_mi = 5) {
+#' @param md_strat a character vector with each value indicating a specific
+#'   missing data strategy to use in the MC-CV run.
+#'
+#' @param outcome a character value indicating the outcome that risk
+#'   models will predict risk for.
+#'
+#' @param additional_missing_pct a numeric value indicating how much
+#'   additional missing data should be amputed from each predictor
+#'   variable prior to imputing data and fitting risk prediction model.
+#'
+#' @param test_index an integer vector with values indicating which rows
+#'   in the data should be held out as testing data.
+#'
+make_mccv_output <- function(intermacs_fake,
+                             iteration,
+                             times,
+                             test_index,
+                             md_strat,
+                             outcome,
+                             additional_missing_pct,
+                             n_impute_mi = 5) {
   # this creates the iteration, md_strat, outcome,
   # and additional_missing_pct values for the current run
 
@@ -301,6 +324,11 @@ make_sim_output <- function(intermacs_fake,
       select(where(is.numeric)) %>%
       names()
 
+    # use a subset of 5 numeric features to perform hot-deck imputes
+    # in the real analysis, we selected 5 features based on variable
+    # importance according to an xgboost model. Here, we just pick
+    # the first 5 features.
+
     hotdeck_trn <- hotdeck_safe(data = im_train_pre_impute,
                                 ord_var = numeric_features[1:5],
                                 recipe = pipe_meanmode_impute)
@@ -323,6 +351,8 @@ make_sim_output <- function(intermacs_fake,
       select(where(is.numeric)) %>%
       names() %>%
       .[1:n_impute_mi]
+
+    # See the explanation in 'hotdeck_si' code above.
 
     hotdeck_trn <- map(
       .x = numeric_features,

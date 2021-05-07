@@ -1,9 +1,14 @@
-##' .. content for \description{} (no empty lines) ..
+
+##' @title tidy up results from evaluation of risk prediction
 ##'
-##' .. content for \details{} ..
+##' @description this function is used by `evaluate_risk_predictions()`,
+##'   and it converts the output into a tibble. In addition, it converts
+##'   the calibration estimates into calibration errors by summing up
+##'   and squaring the differences between predicted and observed risk.
 ##'
-##' @title
-##' @param scores
+##' @param scores output created from `riskRegression::Score()`, which
+##'   produces the AUC, IPA, and calibration data analyzed below.
+##'
 tidy_score <- function(scores) {
 
   q <- 10

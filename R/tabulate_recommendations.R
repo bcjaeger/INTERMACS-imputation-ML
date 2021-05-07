@@ -1,8 +1,14 @@
-##' .. content for \description{} (no empty lines) ..
-##'
-##' .. content for \details{} ..
-##'
-##' @title
+
+#' @title Create table 10: our recommendations
+#'
+#' @description this function creates a target that contains
+#'   table 10 in `index.Rmd`, which summarizes our recommendations
+#'   for using each of the missing data strategies we analyzed.
+#'
+#' There are no inputs to the function.
+#' It just holds some of our thoughts
+#'
+#'
 
 tabulate_recommendations <- function() {
 
@@ -51,6 +57,21 @@ tabulate_recommendations <- function() {
              "Useful in a broad range of scenarios for single or multiple imputation, if computationally feasible",
              "Useful when multiple imputation is feasible")
   ) %>%
-    mutate(imputation_strat = fct_inorder(imputation_strat))
+    mutate(imputation_strat = fct_inorder(imputation_strat)) %>%
+    unnest(cols = c(pros, cons)) %>%
+    group_by(imputation_strat) %>%
+    summarize(
+      across(
+        everything(),
+        ~ paste("<ul><li>", paste(unique(.x), collapse = '</li><li>'))
+      )
+    ) %>%
+    gt(rowname_col = 'imputation_strat') %>%
+    cols_label(
+      features = 'Description',
+      pros = 'Benefits',
+      cons = 'Drawbacks',
+      recs = 'Recommendation'
+    )
 
 }

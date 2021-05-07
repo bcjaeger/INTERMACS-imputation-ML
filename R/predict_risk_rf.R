@@ -1,14 +1,25 @@
-##' .. content for \description{} (no empty lines) ..
+
+##' @title Risk prediction with random forests
 ##'
-##' .. content for \details{} ..
+##' @description this function is used by `predict_risk()`, which in
+##'   turn is used by `make_mccv_output()`. The purpose of this function
+##'   is to generate a set of predicted probabilities for the risk of a
+##'   given outcome at all of the values specified in `times`. Specifically,
+##'   this function computes the predicted probabilities for observations
+##'   in the `testing` data using a random forests model fitted to
+##'   the `training` data. Prior to fitting the model, a data processing
+##'   `pipeline` is trained on the `training` data and then applied to
+##'   the `testing` data.
 ##'
-##' @param training
-##' @param testing
-##' @param pipeline
-##' @param verbose
-##' @param times
+##' @param training the training dataset.
 ##'
-##' @title
+##' @param testing the testing dataset.
+##'
+##' @param pipeline an untrained recipe (it will be trained on `training`).
+##'
+##' @param verbose `TRUE` or `FALSE`; should output be printed?
+##'
+##' @param times a numeric value indicating when risk predictions are computed.
 
 predict_risk_rf_si <- function(training,
                                testing,
