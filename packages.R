@@ -1,58 +1,58 @@
 
+pacman::p_load(
+  conflicted,
+  dotenv,
+  targets,
+  tarchetypes,
+  ## data cleaning
+  janitor,
+  naniar,
+  ## imputation
+  ipa,
+  mice,
+  miceRanger,
+  ## reporting
+  rmarkdown,
+  glue,
+  table.glue,
+  knitr,
+  kableExtra,
+  gtsummary,
+  gt,
+  ## data analysis
+  tidyverse,
+  rstanarm,
+  tidybayes,
+  data.table,
+  magrittr,
+  survival,
+  xgboost,
+  tidymodels,
+  randomForestSRC,
+  MASS,
+  VIM,
+  Hmisc,
+  rpart,
+  party,
+  ## model evaluation
+  riskRegression
+)
 
-## library() calls go here
-library(conflicted)
-library(dotenv)
-library(targets)
-library(tarchetypes)
-## data cleaning
-library(janitor)
-library(naniar)
-## imputation
-library(ipa)
-library(mice)
-library(miceRanger)
-## reporting
-library(rmarkdown)
-library(glue)
-library(table.glue)
-library(knitr)
-library(kableExtra)
-library(gtsummary)
-library(gt)
-## data analysis
-library(tidyverse)
-library(rstanarm)
-library(tidybayes)
-library(data.table)
-library(magrittr)
-library(survival)
-library(xgboost)
-library(xgboost.surv)
-library(tidymodels)
-library(randomForestSRC)
-library(MASS)
-library(VIM)
-library(Hmisc)
-library(rpart)
-library(party)
-## model evaluation
-library(riskRegression)
+pacman::p_load_gh("bcjaeger/xgboost.surv")
 
-
-conflict_prefer("roc",         "pROC")
-conflict_prefer("complete",    "mice")
-conflict_prefer("filter",      "dplyr")
-conflict_prefer("select",      "dplyr")
-conflict_prefer("slice",       "dplyr")
-conflict_prefer('summarise',   "dplyr")
-conflict_prefer('summarize',   "dplyr")
-conflict_prefer('select',      "dplyr")
-conflict_prefer("gather",      "tidyr")
-conflict_prefer("set_names",   "purrr")
-conflict_prefer("discard",     "purrr")
-conflict_prefer("fixed",       "stringr")
-conflict_prefer("all_numeric", "recipes")
-conflict_prefer("matches",     "tidyselect")
-conflict_prefer("impute",      "miceRanger")
-conflict_prefer("R2",          "rstanarm")
+conflicted::conflict_prefer("roc",         "pROC")
+conflicted::conflict_prefer("complete",    "mice")
+conflicted::conflict_prefer("filter",      "dplyr")
+conflicted::conflict_prefer("select",      "dplyr")
+conflicted::conflict_prefer("slice",       "dplyr")
+conflicted::conflict_prefer('summarise',   "dplyr")
+conflicted::conflict_prefer('summarize',   "dplyr")
+conflicted::conflict_prefer('select',      "dplyr")
+conflicted::conflict_prefer("gather",      "tidyr")
+conflicted::conflict_prefer("set_names",   "purrr")
+conflicted::conflict_prefer("discard",     "purrr")
+conflicted::conflict_prefer("fixed",       "stringr")
+conflicted::conflict_prefer("all_numeric", "recipes")
+conflicted::conflict_prefer("matches",     "tidyselect")
+conflicted::conflict_prefer("impute",      "miceRanger")
+conflicted::conflict_prefer("R2",          "rstanarm")
