@@ -8,7 +8,6 @@ pacman::p_load(
   janitor,
   naniar,
   ## imputation
-  ipa,
   mice,
   miceRanger,
   ## reporting
@@ -39,6 +38,7 @@ pacman::p_load(
 )
 
 pacman::p_load_gh("bcjaeger/xgboost.surv")
+pacman::p_load_gh("bcjaeger/ipa")
 
 conflicted::conflict_prefer("roc",         "pROC")
 conflicted::conflict_prefer("complete",    "mice")
