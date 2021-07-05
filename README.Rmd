@@ -32,6 +32,31 @@ tibble::glimpse(intermacs_fake)
 
 ```
 
+
+# Instructions for use
+
+This project is supported by the `targets` package, a make-like pipeline toolkit for statistics and data science. Users of this project will find the online [targets manual](https://books.ropensci.org/targets/) to provide all of the information needed to engage with this analysis. However, we have also written a series of steps to help users who are unfamiliar with the `targets` package engage with this analysis. 
+
+1. Open the project in Rstudio (make sure you can see 'INTERMACS-imputation-ML' in the upper right hand corner of the Rstudio IDE). If you are accessing the project using the American Heart Association Precision Medicine Platform, you can skip the next three steps.
+
+1. Run `library(pacman)` in your console. If running this code leads to an error message "Error in library(pacman) : there is no package called ‘pacman’", then run `install.packages("pacman")` in your console and make sure `pacman` is installed before proceeding.
+
+1. (optional) Open the `packages.R` script and read its contents. 
+
+1. Source `packages.R` by pressing ctrl+shift+S while you are viewing the `packages.R` file in your editor or by running `source("packages.R")` in your console. This command will install packages that are needed to run the analyses in this project. Some packages take a few minutes to install, so this could take up to 15 minutes depending on what needs to be installed.
+
+1. (optional) Open the `_targets.R` script and read its contents. This file contains a blueprint for the project's analysis, and modifying it will alter how the analysis is run. Moreover, each function used in the call to `tar_plan()` has its own script in the R directory with accompanying documentation. See the File structure section below for more.  
+
+1. Before modifying anything in `_targets.R`, run `targets::tar_make()` in your console. This command will initiate construction of the entire analysis pipeline, from data cleaning to the tabulation and visualization of our results. If this is the first time running `tar_make()`, it can take up to 3 hours. Sorry about the wait - believe it or not 3 hours to run the fake analysis is pretty quick relative to the time it takes to run the real analysis.
+
+1. Open `docs/index.Rmd`. This is the file that creates the manuscript. Now that your pipeline is constructed, you can knit this document and your results will populate the pages. To knit, just click the 'knit' button at the top of your editor window when you view this file in your editor. The results you get with default setting should match the results on this projects [GitHub pages website](https://bcjaeger.github.io/INTERMACS-imputation-ML/)
+
+1. Now you can begin to carefully modify the project and experiment. First, try modifying `_targets.R` so that the Monte-Carlo cross-validation experiment is created locally instead of using `data/mccv_output_fake.csv`. You will find instructions on how to do this in the comments written in `_targets.R`. 
+
+1. Once you have set up your own target to create a Monte-Carlo cross-validation experiment, you can modify the function found in `make_mccv_output.R`. I recommend uncommenting the command `browser()` on line 50 of this file, saving the file, and then running `targets::tar_make(callr_function = NULL)` in your console. This will initiate a pipeline build in your local R session that will halt when it reaches line 50 of the `make_mccv_output.R` file and go into browser mode. From there, you can explore the function and run it interactively. You can learn more about browser mode [here](https://support.rstudio.com/hc/en-us/articles/205612627-Debugging-with-the-RStudio-IDE). You can also learn more about getting into browser mode with `targets` in Chapter 4 of the online [targets manual](https://books.ropensci.org/targets/).
+
+If you have any trouble with these steps, please open an issue on this repository and include details on the error message you are receiving.
+
 # File structure:
 
 Each directory in the project, and the files it contains, are described here.

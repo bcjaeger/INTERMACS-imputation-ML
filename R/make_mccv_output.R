@@ -47,6 +47,8 @@ make_mccv_output <- function(intermacs_fake,
 
   message(msg)
 
+  # browser()
+
   # administrative censoring, i.e., events after 8 months don't count
   # a slight buffer is placed between the prediction horizon and admin
   # censoring to stabilize predicted probabilities by xgboost,

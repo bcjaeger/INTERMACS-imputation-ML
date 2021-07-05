@@ -4,7 +4,6 @@
 # INTERMACS-imputation-ML
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 This project allows you to engage with an analysis of data from the
@@ -29,7 +28,6 @@ you have opened this project, accessing the fake INTERMACS data will be
 as easy as the code below makes it seem.
 
 ``` r
-
 intermacs_fake <- readr::read_csv("data/intermacs_fake.csv", 
                                   col_types = readr::cols(),
                                   n_max = 10)
@@ -89,6 +87,81 @@ tibble::glimpse(intermacs_fake)
 #> $ pi_sgpt_alt                 <dbl> 29, 40, 48, 45, 46, 38, 54, 20, 66, 57
 ```
 
+# Instructions for use
+
+This project is supported by the `targets` package, a make-like pipeline
+toolkit for statistics and data science. Users of this project will find
+the online [targets manual](https://books.ropensci.org/targets/) to
+provide all of the information needed to engage with this analysis.
+However, we have also written a series of steps to help users who are
+unfamiliar with the `targets` package engage with this analysis.
+
+1.  Open the project in Rstudio (make sure you can see
+    ‘INTERMACS-imputation-ML’ in the upper right hand corner of the
+    Rstudio IDE). If you are accessing the project using the American
+    Heart Association Precision Medicine Platform, you can skip the next
+    three steps.
+
+2.  Run `library(pacman)` in your console. If running this code leads to
+    an error message “Error in library(pacman) : there is no package
+    called ‘pacman’”, then run `install.packages("pacman")` in your
+    console and make sure `pacman` is installed before proceeding.
+
+3.  (optional) Open the `packages.R` script and read its contents.
+
+4.  Source `packages.R` by pressing ctrl+shift+S while you are viewing
+    the `packages.R` file in your editor or by running
+    `source("packages.R")` in your console. This command will install
+    packages that are needed to run the analyses in this project. Some
+    packages take a few minutes to install, so this could take up to 15
+    minutes depending on what needs to be installed.
+
+5.  (optional) Open the `_targets.R` script and read its contents. This
+    file contains a blueprint for the project’s analysis, and modifying
+    it will alter how the analysis is run. Moreover, each function used
+    in the call to `tar_plan()` has its own script in the R directory
+    with accompanying documentation. See the File structure section
+    below for more.
+
+6.  Before modifying anything in `_targets.R`, run `targets::tar_make()`
+    in your console. This command will initiate construction of the
+    entire analysis pipeline, from data cleaning to the tabulation and
+    visualization of our results. If this is the first time running
+    `tar_make()`, it can take up to 3 hours. Sorry about the wait -
+    believe it or not 3 hours to run the fake analysis is pretty quick
+    relative to the time it takes to run the real analysis.
+
+7.  Open `docs/index.Rmd`. This is the file that creates the manuscript.
+    Now that your pipeline is constructed, you can knit this document
+    and your results will populate the pages. To knit, just click the
+    ‘knit’ button at the top of your editor window when you view this
+    file in your editor. The results you get with default setting should
+    match the results on this projects [GitHub pages
+    website](https://bcjaeger.github.io/INTERMACS-imputation-ML/)
+
+8.  Now you can begin to carefully modify the project and experiment.
+    First, try modifying `_targets.R` so that the Monte-Carlo
+    cross-validation experiment is created locally instead of using
+    `data/mccv_output_fake.csv`. You will find instructions on how to do
+    this in the comments written in `_targets.R`.
+
+9.  Once you have set up your own target to create a Monte-Carlo
+    cross-validation experiment, you can modify the function found in
+    `make_mccv_output.R`. I recommend uncommenting the command
+    `browser()` on line 50 of this file, saving the file, and then
+    running `targets::tar_make(callr_function = NULL)` in your console.
+    This will initiate a pipeline build in your local R session that
+    will halt when it reaches line 50 of the `make_mccv_output.R` file
+    and go into browser mode. From there, you can explore the function
+    and run it interactively. You can learn more about browser mode
+    [here](https://support.rstudio.com/hc/en-us/articles/205612627-Debugging-with-the-RStudio-IDE).
+    You can also learn more about getting into browser mode with
+    `targets` in Chapter 4 of the online [targets
+    manual](https://books.ropensci.org/targets/).
+
+If you have any trouble with these steps, please open an issue on this
+repository and include details on the error message you are receiving.
+
 # File structure:
 
 Each directory in the project, and the files it contains, are described
@@ -98,24 +171,24 @@ here.
 
 The `R` directory contains R scripts used in this analysis:
 
-  - Each script contains one function.
+-   Each script contains one function.
 
-  - The name of the script is the name of the function it contains.
+-   The name of the script is the name of the function it contains.
 
-  - At the top of each script, a description of the function indicates
+-   At the top of each script, a description of the function indicates
     what it does and where it is used in the analysis.
 
 Generally, functions that create targets begin with the words `make`,
 `visualize`, or `tabulate`. These functions are used to create targets
 in the analysis workflow.
 
-  - `make` functions create targets that contain datasets. These targets
+-   `make` functions create targets that contain datasets. These targets
     are often used in downstream targets, e.g. targets that contain
     figures or tables.
 
-  - `visualize` functions create targets that contain figures.
+-   `visualize` functions create targets that contain figures.
 
-  - `tabulate` functions create targets that contain tables.
+-   `tabulate` functions create targets that contain tables.
 
 Some functions do not begin with one of these pre-fixes, and the purpose
 of these functions is written in the `@description` header at the top of
@@ -125,13 +198,13 @@ the file.
 
 The `data` directory holds three files:
 
-  - `intermacs_fake.csv`: a simulated dataset that has similar
+-   `intermacs_fake.csv`: a simulated dataset that has similar
     statistical properties to data from INTERMACS.
 
-  - `sim_output_fake.csv`: the results from the primary analysis when
+-   `sim_output_fake.csv`: the results from the primary analysis when
     `intermacs_fake.csv` is used instead of the real INTERMACS data.
 
-  - `sim_output_real.csv`: the results from the primary analysis when
+-   `sim_output_real.csv`: the results from the primary analysis when
     the real INTERMACS data is used. If this output is used to generate
     the distill article (see `docs/index.Rmd`), then the results
     generated will match results in the manuscript submitted to
@@ -141,19 +214,19 @@ The `data` directory holds three files:
 
 The `docs` directory holds four files:
 
-  - `ccqo.csl`: this file is used by `index.Rmd` to format references
+-   `ccqo.csl`: this file is used by `index.Rmd` to format references
     that follow guidelines from *Circulation: Cardiovascular Quality and
     Outcomes*.
 
-  - `references.bib`: this file supplies references to `index.Rmd` in
+-   `references.bib`: this file supplies references to `index.Rmd` in
     the [bibtex format](https://en.wikipedia.org/wiki/BibTeX).
 
-  - `index.Rmd`: this is the file that knits together the manuscript. It
+-   `index.Rmd`: this is the file that knits together the manuscript. It
     is written using the [distill R
     package](https://rstudio.github.io/distill/), which is an extension
     of [R Markdown](https://bookdown.org/yihui/rmarkdown/) designed for
     scientific articles.
 
-  - `index.html`: this is the file that `index.Rmd` produces. Also,
+-   `index.html`: this is the file that `index.Rmd` produces. Also,
     `index.html` is used by GitHub pages to produce a website associated
     with this project.
